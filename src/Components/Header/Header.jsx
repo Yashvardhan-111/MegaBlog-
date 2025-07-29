@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 //useNavigate is used to create the navigation bar 
 function Header() {
   //auth is the name of authSlice
-  const authStatus= useSelector((state)=> state.auth.slice)
+  const authStatus= useSelector((state)=> state.auth.status)
   const navigate=useNavigate()
   //an array of navbar items
   const navItems = [
@@ -45,20 +45,19 @@ function Header() {
           <div className='mr-4'>
             <Link to='/'>
               <Logo width='70px'   />
-
             </Link>
           </div>
-          <ul className='flex ml-auto'> 
+          <ul className='flex ml-auto flex-row gap-4'>
             {/* arr mei map kiya, if item is active render it.onClick navigate */}
             {navItems.map((item) => 
-            item.active ? (
-              <li key={item.name}>
-                <button
-                onClick={() => navigate(item.slug)}
-                className='inline-bock px-6 py-2 duration-200 hover:bg-blue-100 rounded-full'
-                >{item.name}</button>
-              </li>
-            ) : null
+              item.active ? (
+                <li key={item.name}>
+                  <button
+                    onClick={() => navigate(item.slug)}
+                    className='inline-bock px-6 py-2 duration-200 hover:bg-blue-100 rounded-full'
+                  >{item.name}</button>
+                </li>
+              ) : null
             )}
             {/* diff synatx {condtn && ...} if condtn is true then ... rendered */}
             {authStatus && (

@@ -1,4 +1,5 @@
 import React from 'react'
+import { useState } from 'react';
 import {useNavigate,Link} from 'react-router-dom'
 import { login as authLogin } from '../store/authSlice'
 import {Button, Input, Logo} from "./index"
@@ -22,6 +23,7 @@ function Login() {
             const session=await authService.login(data)     //appwrite ka login
             if(session){
                 const userData = await authService.getCurrentUser()
+                console.log('userData after login:', userData);
                 if(userData) dispatch(authLogin(userData));     //slice wala in store
                 navigate("/")       //login done.send the user to route without clicking nay link
             }

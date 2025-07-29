@@ -24,10 +24,13 @@ export default function Post() {
         } else navigate("/");
     }, [slug, navigate]);
 
+
     const deletePost = () => {
         appwriteService.deletePost(post.$id).then((status) => {
             if (status) {
-                appwriteService.deleteFile(post.featuredImage);
+                if (post.featuredimage) {
+                    appwriteService.deleteFile(post.featuredimage);
+                }
                 navigate("/");
             }
         });
@@ -37,16 +40,18 @@ export default function Post() {
         <div className="py-8">
             <Container>
                 <div className="w-full flex justify-center mb-4 relative border rounded-xl p-2">
-                    <img
-                        src={appwriteService.getFilePreview(post.featuredImage)}
-                        alt={post.title}
-                        className="rounded-xl"
-                    />
+                    {post.featuredimage && (
+                        <img
+                            src={appwriteService.getFileView(post.featuredimage)}
+                            alt={post.title}
+                            className="rounded-xl"
+                        />
+                    )}
 
                     {isAuthor && (
-                        <div className="absolute right-6 top-6">
+                        <div className="absolute right-6 top-6 flex flex-row gap-3">
                             <Link to={`/edit-post/${post.$id}`}>
-                                <Button bgColor="bg-green-500" className="mr-3">
+                                <Button bgColor="bg-green-500">
                                     Edit
                                 </Button>
                             </Link>
@@ -61,7 +66,7 @@ export default function Post() {
                 </div>
                 <div className="browser-css">
                     {parse(post.content)}
-                    </div>
+                </div>
             </Container>
         </div>
     ) : null;

@@ -5,6 +5,7 @@ import './App.css'
 import { login,logout } from './store/authSlice'
 import Header from './Components/Header/header'
 import Footer from './Components/Footer/Footer'
+import { Outlet } from "react-router-dom";
 
 function App() {
   //console.log(import.meta.env.VITE_PASSWORD);
@@ -20,9 +21,9 @@ function App() {
       if(userData){
         dispatch(login({userData})) //authSlice ka reducer
       }
-      else{
-        dispatch(logout())
-      }
+      // else{
+      //   dispatch(logout())
+      // }
     })
     .finally(() => setLoading(false))
   }, [])
@@ -33,7 +34,8 @@ function App() {
       <div className='w-full block'>
         <Header />
         <main>
-        {/* TODO:  <Outlet /> */}
+          {/* Render child routes here */}
+          <Outlet />
         </main>
         <Footer />
       </div>

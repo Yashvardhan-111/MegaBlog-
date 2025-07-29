@@ -23,31 +23,36 @@ export default function PostForm( {post} ) {
     const submit = async (data) => {/////data from RHF
         if (post) {                 // if post already existed(editing) upload new img(if present) and delete old
             const file = data.image[0] ? await appwriteService.uploadFile(data.image[0]) : null;
-
-            if (file) {
-                appwriteService.deleteFile(post.featuredImage);
+            console.log('uploaded file:', file);
+            let updateData = { ...data };
+            // Remove image file object from updateData before sending to Appwrite
+            delete updateData.image;
+            if (file && file.$id) {
+                if (post.featuredimage) {
+                    appwriteService.deleteFile(post.featuredimage);
+                }
+                updateData.featuredimage = file.$id;
             }
-            
             //update post , can check parameters in config 
-            const dbPost = await appwriteService.updatePost(post.$id, {
-                ...data,
-                featuredImage: file ? file.$id : undefined,
-            });
-
+            const dbPost = await appwriteService.updatePost(post.$id, updateData);
+            console.log('updated dbPost:', dbPost);
             if (dbPost) {//if updated navigate
                 navigate(`/post/${dbPost.$id}`);
             }
         } else {        //new post
             const file = await appwriteService.uploadFile(data.image[0]);
-
-            if (file) {
-                const fileId = file.$id;
-                data.featuredImage = fileId;
-                const dbPost = await appwriteService.createPost({ ...data, userId: userData.$id });
-
+            console.log('uploaded file:', file);
+            if (file && file.$id) {
+                data.featuredimage = file.$id;
+                // Remove image file object from data before sending to Appwrite
+                delete data.image;
+                const dbPost = await appwriteService.createPost({ ...data, userId: userData?.$id });
+                console.log('created dbPost:', dbPost);
                 if (dbPost) {
                     navigate(`/post/${dbPost.$id}`);
                 }
+            } else {
+                console.log('File upload failed or file.$id missing:', file);
             }
         }
     };
@@ -79,7 +84,7 @@ export default function PostForm( {post} ) {
     }, [watch, slugTransform, setValue]);
     //slug input has onInput This allows manual editing of the slug by typing it .
   return (
-    <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
+    <form onSubmit={handleSubmit(submit, (errors) => { console.log('form errors:', errors); })} className="flex flex-wrap">
             <div className="w-2/3 px-2">
                 <Input
                     label="Title :"
@@ -106,13 +111,35 @@ export default function PostForm( {post} ) {
                     accept="image/png, image/jpg, image/jpeg, image/gif"
                     {...register("image", { required: !post })}
                 />
+                {/* Show preview of newly selected image, else show post.featuredimage if exists */}
                 {post && (
                     <div className="w-full mb-4">
-                        <img
-                            src={appwriteService.getFilePreview(post.featuredImage)}
-                            alt={post.title}
-                            className="rounded-lg"
-                        />
+                        {(() => {
+                            const imgFile = watch("image") && watch("image")[0];
+                            if (imgFile) {
+                                const previewUrl = URL.createObjectURL(imgFile);
+                                console.log("[DEBUG] Showing preview for selected file:", previewUrl);
+                                return (
+                                    <img
+                                        src={previewUrl}
+                                        alt={post.title}
+                                        className="rounded-lg"
+                                    />
+                                );
+                            } else if (post.featuredimage) {
+                                const viewUrl = appwriteService.getFileView(post.featuredimage);
+                                return (
+                                    <img
+                                        src={viewUrl}
+                                        alt={post.title}
+                                        className="rounded-lg"
+                                    />
+                                );
+                            } else {
+                                console.log("[DEBUG] No image to preview for this post.");
+                                return null;
+                            }
+                        })()}
                     </div>
                 )}
                 <Select

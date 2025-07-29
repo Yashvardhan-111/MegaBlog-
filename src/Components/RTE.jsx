@@ -12,6 +12,8 @@ import {Controller } from 'react-hook-form';
 //When the user types or formats text, onEditorChange fires → react hook form’s onChange 
 // onChange (RHF)	Updates form state(anmed content) when value changes
 export default function RTE({name, control, label, defaultValue =""}) {
+  // Replace with your actual TinyMCE API key
+  const TINYMCE_API_KEY = "op4nk9n21f73698dl30h17e6jpi9ru7o1xs583ybpl4627ag";
   return (
     <div className='w-full'> 
     {label && <label className='inline-block mb-1 pl-1'>{label}</label>}
@@ -21,6 +23,7 @@ export default function RTE({name, control, label, defaultValue =""}) {
     control={control}
     render={({field: {onChange}}) => (
         <Editor
+        apiKey={TINYMCE_API_KEY}
         initialValue={defaultValue}
         init={{
             initialValue: defaultValue,
