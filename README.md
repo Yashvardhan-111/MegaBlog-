@@ -24,6 +24,7 @@ If you are developing a production application, we recommend using TypeScript wi
 
 services are in appwrite folder. we try to avoid vendor lock in . most of the code is in documenatation of appwrite  refer to it but we modify it to avoid vendor lock in . Client and account are basic so we import it
 
+RHF in input component
 
 register is used to connect your input field to React Hook Form.
 <input {...register("username")} />

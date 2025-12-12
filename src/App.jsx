@@ -10,7 +10,7 @@ import { Outlet } from "react-router-dom";
 function App() {
   //console.log(import.meta.env.VITE_PASSWORD);
 
-  //network,database call mei time lag sakta hai uske liye loading state bnalo.used for consitional rendering 
+  //network,database call mei time lag sakta hai uske liye loading state bnalo.used for conditional rendering 
   //if true show loading icon
   const [loading, setLoading] = useState(true)
   const dispatch = useDispatch()
